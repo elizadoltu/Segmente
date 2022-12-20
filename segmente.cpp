@@ -213,38 +213,50 @@ void showRules(){
 
 bool verifyText(int x, int y){
 
-    if ((x >= text_x - titleWidth / 2 and y >= text_y - titleHeight / 2) and (x <= text_x + titleWidth / 2 and y <= text_y + titleHeight / 2))
+    if ((x >= text_x - titleWidth / 2 - 50 and y >= text_y - titleHeight / 2 - 50) and (x <= text_x + titleWidth / 2 + 50 and y <= text_y + titleHeight / 2 + 50))
         return true;
     else return false;
 }
 
 int main()
 {
-    initwindow(SIZE_WIDTH, SIZE_HEIGHT);
+    int mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
+
     showTitle(); showPlay(); showRules();
     int dx, dy;
     bool isClicked = false;
+    int rulesWindow, playWindow;
 
-    /*
-    while(gameRun){
+    setcurrentwindow(mainWindow);
+
+    while(1){
 
 
-
-        }
         keyPressed = (char) getch();
-        if (keyPressed == 'x' or keyPressed == 'X')
-            gameRun = false;
-
-    }
-    */
-    if (ismouseclick(WM_LBUTTONDOWN)){
-        getmouseclick(WM_LBUTTONDOWN, dx, dy);
-        if (verifyText(dx, dy) == true){
-            cout << "da";
+        if (keyPressed == 'p' or keyPressed == 'P'){
+            closegraph(CURRENT_WINDOW);
+            playWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "PLAY");
+            setcurrentwindow(playWindow);
+            generarePuncte();
         }
+        if (keyPressed == 'r' or keyPressed == 'R'){
+            closegraph(CURRENT_WINDOW);
+            rulesWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "RULES");
+            setcurrentwindow(rulesWindow);
+            isClicked = true;
+        }
+        if (keyPressed == 'b' or keyPressed == 'B'){
+            closegraph(CURRENT_WINDOW);
+            mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
+            showTitle(); showPlay(); showRules();
+            setcurrentwindow(mainWindow);
+        }
+        if (keyPressed == 'x' or keyPressed == 'X')
+            closegraph(ALL_WINDOWS);
+
     }
     if (isClicked)
-        generarePuncte();
+        outtext("Your 'flag' boolean needs to be checked as the condition for both while loops, not just the first one.");
 
     getch();
     closegraph();
