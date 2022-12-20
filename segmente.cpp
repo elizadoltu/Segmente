@@ -197,7 +197,7 @@ int main()
         getmouseclick(WM_LBUTTONDBLCLK, dx, dy);
         if (verifyText(dx, dy) == true){
             isClicked = true;
-            closegraph();
+            gameRun = false;
         }
         keyPressed = (char) getch();
         if (keyPressed == 'x' or keyPressed == 'X')
@@ -207,6 +207,7 @@ int main()
     if (isClicked)
         generarePuncte();
 
-
+    getch();
+    closegraph();
 	return 0;
 }
