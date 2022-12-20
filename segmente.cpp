@@ -13,6 +13,7 @@ int cnt = 1, n = 1;
 bool gameRun = true;
 char keyPressed;
 int text_x, text_y;
+int titleWidth, titleHeight;
 
 struct Player{
 
@@ -168,18 +169,51 @@ void generarePuncte()
     trageLinia();
 }
 
-void showText(){
+void showTitle(){
 
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 6);
-    text_x = SIZE_WIDTH / 2 - 50;
-    text_y = SIZE_HEIGHT / 4 ;
+
+    int titleWidth = textwidth("SEGMENTE");
+    int titleHeight = textheight("SEGMENTE");
+
+    text_x = SIZE_WIDTH / 2 - titleWidth / 2;
+    text_y = SIZE_HEIGHT / 4 - titleHeight / 2;
+
     outtextxy(text_x, text_y, "SEGMENTE");
+
+}
+
+void showPlay(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+
+    int playWidth = textwidth("PLAY");
+    int playHeight = textheight("PLAY");
+
+    int play_x = SIZE_WIDTH / 2 - playWidth / 2;
+    int play_y = SIZE_WIDTH / 4 * 2 - playHeight / 2;
+
+    outtextxy(play_x, play_y, "PLAY");
+
+}
+
+void showRules(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+
+    int rulesWidth = textwidth("RULES");
+    int rulesHeight = textheight("RULES");
+
+    int rules_x = SIZE_WIDTH / 2 - rulesWidth / 2;
+    int rules_y = SIZE_WIDTH / 4 * 3 - rulesHeight / 2;
+
+    outtextxy(rules_x, rules_y, "RULES");
 
 }
 
 bool verifyText(int x, int y){
 
-    if (x >= text_x and x <= text_x + 100 and y >= text_y and y <= text_y + 50)
+    if ((x >= text_x - titleWidth / 2 and y >= text_y - titleHeight / 2) and (x <= text_x + titleWidth / 2 and y <= text_y + titleHeight / 2))
         return true;
     else return false;
 }
@@ -187,22 +221,27 @@ bool verifyText(int x, int y){
 int main()
 {
     initwindow(SIZE_WIDTH, SIZE_HEIGHT);
-    showText();
+    showTitle(); showPlay(); showRules();
     int dx, dy;
     bool isClicked = false;
 
+    /*
     while(gameRun){
 
-        clearmouseclick(WM_LBUTTONDBLCLK);
-        getmouseclick(WM_LBUTTONDBLCLK, dx, dy);
-        if (verifyText(dx, dy) == true){
-            isClicked = true;
-            gameRun = false;
+
+
         }
         keyPressed = (char) getch();
         if (keyPressed == 'x' or keyPressed == 'X')
             gameRun = false;
 
+    }
+    */
+    if (ismouseclick(WM_LBUTTONDOWN)){
+        getmouseclick(WM_LBUTTONDOWN, dx, dy);
+        if (verifyText(dx, dy) == true){
+            cout << "da";
+        }
     }
     if (isClicked)
         generarePuncte();
