@@ -253,12 +253,8 @@ int main()
         }
         if (keyPressed == 'x' or keyPressed == 'X')
             closegraph(ALL_WINDOWS);
-
     }
-    if (isClicked)
-        outtext("Your 'flag' boolean needs to be checked as the condition for both while loops, not just the first one.");
 
     getch();
-    closegraph();
 	return 0;
 }
