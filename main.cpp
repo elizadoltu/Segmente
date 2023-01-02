@@ -1,20 +1,24 @@
 #include <iostream>
 #include <stdlib.h>
-#include <winbgim.h>
 #include <graphics.h>
 #include <time.h>
 #include <cstring>
 #include <algorithm>
-#include "setUp.h"
-#include "menu.h"
+#include <windows.h>
+#define SIZE_WIDTH 800
+#define SIZE_HEIGHT 800
+
 using namespace std;
 
-int matriceSegmente[51][51];
+int cnt = 1, n = 1;
+bool gameRun = true;
 char keyPressed;
-bool valuePlay, valueRules;
-bool gameRunning = true;
-int counter = 1;
-int dx, dy;
+int text_x, text_y;
+int titleWidth, titleHeight;
+int rules_x, rules_y;
+int play_x, play_y;
+int controls_x, controls_y;
+int circle_x, circle_y;
 
 struct Player{
 
@@ -22,136 +26,300 @@ struct Player{
 
 };
 
+struct coordonate{
+	int a, b, c, d;
+}segment[200];
+
+int viz[200];
+
 struct DrawPoint{
 
     int xCoordonate, yCoordonate;
     int pointNumber;
     bool taken;
-
 } point[200];
 
-void playerInput(){
-
-
-
-}
-char index[201][5]= {{"0"}, {"1"}, {"2"}, {"3"}, {"4"}, {"5"}, {"6"}, {"7"}, {"8"}, {"9"},
-{"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"},
-{"20"}, {"21"}, {"22"}, {"23"}, {"24"}, {"25"}, {"26"}, {"27"}, {"28"}, {"29"},
-{"30"}, {"31"}, {"32"}, {"33"}, {"34"}, {"35"}, {"36"}, {"37"}, {"38"}, {"39"},
-{"40"}, {"41"}, {"42"}, {"43"}, {"44"}, {"45"}, {"46"}, {"47"}, {"48"}, {"49"},
-{"50"}, {"51"}, {"52"}, {"53"}, {"54"}, {"55"}, {"56"}, {"57"}, {"58"}, {"59"},
-{"60"}, {"61"}, {"62"}, {"63"}, {"64"}, {"65"}, {"66"}, {"67"}, {"68"}, {"69"},
-{"70"}, {"71"}, {"72"}, {"73"}, {"74"}, {"75"}, {"76"}, {"77"}, {"78"}, {"79"},
-{"80"}, {"81"}, {"82"}, {"83"}, {"84"}, {"85"}, {"86"}, {"87"}, {"88"}, {"89"},
-{"90"}, {"91"}, {"92"}, {"93"}, {"94"}, {"95"}, {"96"}, {"97"}, {"98"}, {"99"},
-{"100"}, {"101"}, {"102"}, {"103"}, {"104"}, {"105"}, {"106"}, {"107"}, {"108"}, {"109"},
-{"110"}, {"111"}, {"112"}, {"113"}, {"114"}, {"115"}, {"116"}, {"117"}, {"118"}, {"119"},
-{"120"}, {"121"}, {"122"}, {"123"}, {"124"}, {"125"}, {"126"}, {"127"}, {"128"}, {"129"},
-{"130"}, {"131"}, {"132"}, {"133"}, {"134"}, {"135"}, {"136"}, {"137"}, {"138"}, {"139"},
-{"140"}, {"141"}, {"142"}, {"143"}, {"144"}, {"145"}, {"146"}, {"147"}, {"148"}, {"149"},
-{"150"}, {"151"}, {"152"}, {"153"}, {"154"}, {"155"}, {"156"}, {"157"}, {"158"}, {"159"},
-{"160"}, {"161"}, {"162"}, {"163"}, {"164"}, {"165"}, {"166"}, {"167"}, {"168"}, {"169"},
-{"170"}, {"171"}, {"172"}, {"173"}, {"174"}, {"175"}, {"176"}, {"177"}, {"178"}, {"179"},
-{"180"}, {"181"}, {"182"}, {"183"}, {"184"}, {"185"}, {"186"}, {"187"}, {"188"}, {"189"},
-{"190"}, {"191"}, {"192"}, {"193"}, {"194"}, {"195"}, {"196"}, {"197"}, {"198"}, {"199"}, {"200"}};
-
+	char index[201][5]= {{"0"}, {"1"}, {"2"}, {"3"}, {"4"}, {"5"}, {"6"}, {"7"}, {"8"}, {"9"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"20"}, {"21"}, {"22"}, {"23"}, {"24"}, {"25"}, {"26"}, {"27"}, {"28"}, {"29"}, {"30"}, {"31"}, {"32"}, {"33"}, {"34"}, {"35"}, {"36"}, {"37"}, {"38"}, {"39"}, {"40"}, {"41"}, {"42"}, {"43"}, {"44"}, {"45"}, {"46"}, {"47"}, {"48"}, {"49"}, {"50"}, {"51"}, {"52"}, {"53"}, {"54"}, {"55"}, {"56"}, {"57"}, {"58"}, {"59"}, {"60"}, {"61"}, {"62"}, {"63"}, {"64"}, {"65"}, {"66"}, {"67"}, {"68"}, {"69"}, {"70"}, {"71"}, {"72"}, {"73"}, {"74"}, {"75"}, {"76"}, {"77"}, {"78"}, {"79"}, {"80"}, {"81"}, {"82"}, {"83"}, {"84"}, {"85"}, {"86"}, {"87"}, {"88"}, {"89"}, {"90"}, {"91"}, {"92"}, {"93"}, {"94"}, {"95"}, {"96"}, {"97"}, {"98"}, {"99"}, {"100"}, {"101"}, {"102"}, {"103"}, {"104"}, {"105"}, {"106"}, {"107"}, {"108"}, {"109"}, {"110"}, {"111"}, {"112"}, {"113"}, {"114"}, {"115"}, {"116"}, {"117"}, {"118"}, {"119"}, {"120"}, {"121"}, {"122"}, {"123"}, {"124"}, {"125"}, {"126"}, {"127"}, {"128"}, {"129"}, {"130"}, {"131"}, {"132"}, {"133"}, {"134"}, {"135"}, {"136"}, {"137"}, {"138"}, {"139"}, {"140"}, {"141"}, {"142"}, {"143"}, {"144"}, {"145"}, {"146"}, {"147"}, {"148"}, {"149"}, {"150"}, {"151"}, {"152"}, {"153"}, {"154"}, {"155"}, {"156"}, {"157"}, {"158"}, {"159"}, {"160"}, {"161"}, {"162"}, {"163"}, {"164"}, {"165"}, {"166"}, {"167"}, {"168"}, {"169"}, {"170"}, {"171"}, {"172"}, {"173"}, {"174"}, {"175"}, {"176"}, {"177"}, {"178"}, {"179"}, {"180"}, {"181"}, {"182"}, {"183"}, {"184"}, {"185"}, {"186"}, {"187"}, {"188"}, {"189"}, {"190"}, {"191"}, {"192"}, {"193"}, {"194"}, {"195"}, {"196"}, {"197"}, {"198"}, {"199"}, {"200"}};
 bool comp(DrawPoint a, DrawPoint b)
 {
 	if(a.xCoordonate != b.xCoordonate)
-        return a.xCoordonate < b.xCoordonate;
+	return a.xCoordonate < b.xCoordonate;
 	return a.yCoordonate <= b.yCoordonate;
 }
 
-bool CautareBin(int st, int dr, int x, int y)
+
+int CautareBin(int st, int dr, int x, int y)
 {
 	int m = (st + dr) / 2;
-	if(x < point[m].xCoordonate - 10)
-        return CautareBin(st, m - 1, x, y);
+	if(st > dr)
+        return 0;
 	else
-        if(x > point[m].xCoordonate + 10)
-            return CautareBin(m + 1, dr, x , y);
-	else {
-		if(y < point[m].yCoordonate - 10)
-            return CautareBin(st, m - 1, x, y);
+	{
+		if(x < point[m].xCoordonate - 10)
+		return CautareBin(st, m - 1, x, y);
+		else if(x > point[m].xCoordonate + 10)
+		return CautareBin(m + 1, dr, x , y);
 		else
-            if(y > point[m].yCoordonate + 10)
-                return CautareBin(m + 1, dr, x , y);
-            else
-                return 1;
+		{
+			if(y < point[m].yCoordonate - 10)
+			return CautareBin(st, m - 1, x, y);
+			else if(y > point[m].yCoordonate + 10)
+			return CautareBin(m + 1, dr, x , y);
+	    	else if(y >= point[m].yCoordonate - 10 or y <= point[m].yCoordonate + 10)return m;
+		}
 	}
-	return 0;
+
 }
+
 
 void trageLinia()
 {
 	POINT cursorPos;
-	int x1, x2, y1, y2, verif, ok;
+	int x1, x2, y1, y2, verif1, verif2, ok;
 	int nr = 100;
-	while(nr){
-		cursorPos.x = cursorPos.x - 3;
-		cursorPos.y = cursorPos.x - 26;
-		if(ismouseclick(WM_LBUTTONDOWN)){
+	while(1)
+	{
+ 		//verific daca click stanga e apsat si unde a fost apasat
+		if(ismouseclick(WM_LBUTTONDOWN))
+		{
 			getmouseclick(WM_LBUTTONDOWN, x1, y1);
-			if(CautareBin(1, counter, x1, y1) == 1){
-                cout << "da ";
+			//caut cercul pentru a trage linia din mijlocul cercului
+			int c1 = CautareBin(0, cnt + 1, x1, y1);
+			if(c1)
+			{
+				//maresc cercul apasat
+				setlinestyle(SOLID_LINE, 0, 1);
+				setcolor(RED);
+        		circle(point[c1].xCoordonate, point[c1].yCoordonate, 10);
+        		setcolor(WHITE);
+				setfillstyle(SOLID_FILL,RED);
+        		circle(point[c1].xCoordonate, point[c1].yCoordonate, 15);
+        		floodfill(point[c1].xCoordonate + 11, point[c1].yCoordonate, WHITE);
+				verif1 = 0;
+				//caut urmatorul cerc pentru a face un segment si repet aceasi pasi ca mai inainte
+				while(verif1 == 0)
+				{
+					setlinestyle(SOLID_LINE, 0, 3);
+					setcolor(BLACK);
+					line(point[c1].xCoordonate, point[c1].yCoordonate, cursorPos.x - 3, cursorPos.y - 26);
+					setcolor(WHITE);
+					GetCursorPos(&cursorPos);
+					line(point[c1].xCoordonate, point[c1].yCoordonate, cursorPos.x - 3, cursorPos.y - 26);
+					if(ismouseclick(WM_LBUTTONDOWN))
+					{
+						getmouseclick(WM_LBUTTONDOWN, x2, y2);
+						int c2 = CautareBin(0, cnt + 1, x2, y2);
+
+						if(c2)
+						{
+							setlinestyle(SOLID_LINE, 0, 1);
+							setcolor(RED);
+        					circle(point[c2].xCoordonate, point[c2].yCoordonate, 10);
+        					setcolor(WHITE);
+							setfillstyle(SOLID_FILL,RED);
+        					circle(point[c2].xCoordonate, point[c2].yCoordonate, 15);
+        					floodfill(point[c2].xCoordonate + 11, point[c2].yCoordonate, WHITE);
+        					setlinestyle(SOLID_LINE, 0, 3);
+							setcolor(BLACK);
+							line(point[c1].xCoordonate, point[c1].yCoordonate, cursorPos.x - 3, cursorPos.y - 26);
+							setcolor(GREEN);
+						 	line(point[c1].xCoordonate, point[c1].yCoordonate, point[c2].xCoordonate, point[c2].yCoordonate);
+						 	verif1 = 1;
+						 	segment[n].a = point[c1].xCoordonate;
+						 	segment[n].b = point[c1].yCoordonate;
+						 	segment[n].c = point[c2].xCoordonate;
+						 	segment[n].d = point[c2].yCoordonate;
+						 	n++;
+						}
+					}
+				}
 			}
-        }
+		}
+		delay(5);
 	}
 }
-
-
-void generarePuncte(){
-
+//redesenz totul
+void generarePuncte()
+{
     int puncteGenerate;
-    cout << ("Introduce un numar intre 10 si 50:");
+    cout << "Introduce un numar intre 10 si 50: ";
     cin >> puncteGenerate;
 
-    while (counter <= puncteGenerate){
-
-        settextstyle(EUROPEAN_FONT, HORIZ_DIR, 1);
-        point[counter].pointNumber = counter;
-        point[counter].xCoordonate = rand()%800;
-        point[counter].yCoordonate = rand()%800;
+    srand(time(0));
 
 
-        if ((point[counter].xCoordonate >= 20 && point[counter].xCoordonate <= 800) &&
-            (point[counter].yCoordonate >= 20 && point[counter].yCoordonate <= 800)){
-            circle(point[counter].xCoordonate, point[counter].yCoordonate, 4);
-
-            setfillstyle(SOLID_FILL, WHITE);
-            floodfill(point[counter].xCoordonate, point[counter].yCoordonate, WHITE);
-
-            outtextxy(point[counter].xCoordonate - 6, point[counter].yCoordonate - 30, index[counter]);
-            ++counter;
-        }
+    while (cnt <= puncteGenerate){
+    	while(1)
+    	{
+        	point[cnt].pointNumber = cnt;
+        	point[cnt].xCoordonate = (rand() % (SIZE_WIDTH - 100) + 50);
+        	point[cnt].yCoordonate = (rand() % (SIZE_HEIGHT - 100) + 50);
+        	int i = 1, ok = 1;
+        	for(i = 1; i < cnt; i++)
+        	{
+        		if((point[i].xCoordonate >= point[cnt].xCoordonate - 40 and point[i].xCoordonate <= point[cnt].xCoordonate + 40) and (point[i].yCoordonate >= point[cnt].yCoordonate - 40 and point[i].yCoordonate <= point[cnt].yCoordonate + 40))
+				ok = 0;
+			}
+ 			if(ok == 1)break;
+		}
+		sort(point + 1, point + cnt, comp);
+		setfillstyle(SOLID_FILL,RED);
+        circle(point[cnt].xCoordonate, point[cnt].yCoordonate, 10);
+        floodfill(point[cnt].xCoordonate, point[cnt].yCoordonate, WHITE);
+        settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
+        outtextxy(point[cnt].xCoordonate - 6, point[cnt].yCoordonate - 30, index[cnt]);
+        cnt++;
     }
-    sort(point + 1, point + counter, comp);
+    cnt--;
     trageLinia();
+}
+
+void showTitle(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 6);
+
+    int titleWidth = textwidth("SEGMENTE");
+    int titleHeight = textheight("SEGMENTE");
+
+    text_x = SIZE_WIDTH / 2 - titleWidth / 2;
+    text_y = SIZE_HEIGHT / 5 - titleHeight / 2;
+
+    outtextxy(text_x, text_y, "SEGMENTE");
+
+}
+
+void showPlay(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+
+    int playWidth = textwidth("PLAY");
+    int playHeight = textheight("PLAY");
+
+    play_x = SIZE_WIDTH / 2 - playWidth / 2;
+    play_y = SIZE_WIDTH / 5 * 2 - playHeight / 2;
+
+    outtextxy(play_x, play_y, "PLAY");
+
+}
+
+void showRules(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+
+    int rulesWidth = textwidth("RULES");
+    int rulesHeight = textheight("RULES");
+
+    rules_x = SIZE_WIDTH / 2 - rulesWidth / 2;
+    rules_y = SIZE_WIDTH / 5 * 3 - rulesHeight / 2;
+
+    outtextxy(rules_x, rules_y, "RULES");
+
+}
+
+void showControls(){
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+
+    int controlsWidth = textwidth("CONTROLS");
+    int controlsHeight = textheight("CONTROLS");
+
+    controls_x = SIZE_WIDTH / 2 - controlsWidth / 2;
+    controls_y = SIZE_HEIGHT / 5 * 4 - controlsHeight / 2;
+
+    outtextxy(controls_x, controls_y, "CONTROLS");
+
+}
+
+bool verifyText(int x, int y){
+
+    if ((x >= text_x - titleWidth / 2 - 50 and y >= text_y - titleHeight / 2 - 50) and (x <= text_x + titleWidth / 2 + 50 and y <= text_y + titleHeight / 2 + 50))
+        return true;
+    else return false;
 }
 
 int main()
 {
-    setUpMainWindow();
-    showTitle();
+    int mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
+	
+    showTitle(); showPlay(); showRules(); showControls();
+    circle_y = 320; circle_x = play_x - 100;
+    circle(circle_x, circle_y, 10);
+    setfillstyle(SOLID_FILL, WHITE);
+    floodfill(circle_x, circle_y, WHITE);
 
-    while (gameRunning == true) {
+    int dx, dy;
+    bool isClicked = false;
 
-        drawButtons();
-        getmouseclick(WM_LBUTTONDOWN, dx, dy);
-        if (isPlayClicked(dx, dy) == true){
-            cleardevice();
-        }
-        if (isRulesClicked(dx, dy) == true)
-            gameRunning = false;
+    int rulesWindow, playWindow, controlsWindow;
+    setcurrentwindow(mainWindow);
+
+    while(gameRun){
 
         keyPressed = (char) getch();
 
-        if ((keyPressed == 'x') || keyPressed == 'X')
-            gameRunning = false;
+        if (keyPressed == 'b' or keyPressed == 'B'){
+            closegraph(CURRENT_WINDOW);
+            mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
+            showTitle(); showPlay(); showRules(); showControls();
+            circle(circle_x, circle_y, 10);
+            setfillstyle(SOLID_FILL, WHITE);
+            floodfill(circle_x, circle_y, WHITE);
+            setcurrentwindow(mainWindow);
+        }
+        if ((keyPressed == 'w' or keyPressed == 'W') and circle_y > 320){
+            cleardevice();
+            showTitle(); showPlay(); showRules(); showControls();
+            circle_y -= 160;
+            circle(circle_x, circle_y, 10);
+            setfillstyle(SOLID_FILL, WHITE);
+            floodfill(circle_x, circle_y, WHITE);
+        }
+        if ((keyPressed == 's' or keyPressed == 'S') and circle_y < 640){
+            cleardevice();
+            showTitle(); showPlay(); showRules(); showControls();
+            circle_y += 160;
+            circle(circle_x, circle_y, 10);
+            setfillstyle(SOLID_FILL, WHITE);
+            floodfill(circle_x, circle_y, WHITE);
+        }
 
+        if (GetAsyncKeyState(VK_SPACE)){
+
+            if (circle_y == 320){
+                closegraph(CURRENT_WINDOW);
+                playWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "PLAY");
+                setcurrentwindow(playWindow);
+                generarePuncte();
+            }
+            if (circle_y == 480){
+                closegraph(CURRENT_WINDOW);
+                rulesWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "RULES");
+                setcurrentwindow(rulesWindow);
+                settextstyle(EUROPEAN_FONT, HORIZ_DIR, 2);
+                outtextxy(10, 60,"Pe o foaie de hartie marcati la intamplare cateva zeci de puncte.");
+                outtextxy(10, 80,"Fiecare dintre cei doi jucatori are pregatit cate un creion colorat,");
+                outtextxy(10, 100, "in cazul acesta, punctele vor aparea pe ecran. Punctele se ");
+                outtextxy(10, 120, "unesc, doua cate doua, prin segmente de dreapta, indiferent de");
+                outtextxy(10, 140, "marimea si orientarea segmentelor. Acelasi punct nu poate fi ");
+                outtextxy(10, 160, "capatul a doua sau mai multe segmente, iar segmentele nu se");
+                outtextxy(10, 180, "vor intretaia.");
+            }
+            if (circle_y == 640){
+                closegraph(CURRENT_WINDOW);
+                controlsWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "CONTROLS");
+                setcurrentwindow(controlsWindow);
+                settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+                outtextxy(290, 180, "w, W - up");
+                outtextxy(290, 260, "s, W - down");
+                outtextxy(290, 340, "SPACE - select");
+                outtextxy(290, 420, "b, B - back");
+            }
+        }
+
+        if (keyPressed == 'x' or keyPressed == 'X')
+            gameRun = false;
     }
-    getch();
     closegraph();
-    return 0;
+    getch();
+	return 0;
 }
