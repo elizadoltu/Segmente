@@ -20,7 +20,7 @@ int rules_x, rules_y;
 int play_x, play_y;
 int controls_x, controls_y;
 int circle_x, circle_y;
-int puncteGenerate;
+unsigned int puncteGenerate = 0;
 
 struct Player{
 
@@ -191,12 +191,10 @@ int trageLinia(bool run)
     while(run)
     {
          if (GetAsyncKeyState(VK_HOME)){
+            cleardevice();
             run = false;
             return run;
          }
-
-         if (GetAsyncKeyState(VK_DELETE))
-            --n;
 
         if(ismouseclick(WM_LBUTTONDOWN))
         {
@@ -302,6 +300,9 @@ int trageLinia(bool run)
                 verif1 = 0;
             }
         }
+        if (GetAsyncKeyState(VK_DELETE))
+            --n;
+
         delay(2);
         if(n * 2 == cnt - 1)
         {
@@ -313,8 +314,88 @@ int trageLinia(bool run)
 
 void generarePuncte()
 {
-    cout << "Introduce un numar intre 10 si 50: ";
-    cin >> puncteGenerate;
+    cleardevice();
+
+    settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
+    outtextxy(10, 250, "Select colour line");
+    setfillstyle(SOLID_FILL, MAGENTA);
+    rectangle(400, 250, 440, 290);
+    floodfill(420, 270, WHITE);
+
+    setfillstyle(SOLID_FILL, RED);
+    rectangle(450, 250, 490, 290);
+    floodfill(470, 270, WHITE);
+
+    setfillstyle(SOLID_FILL, CYAN);
+    rectangle(500, 250, 540, 290);
+    floodfill(520, 270, WHITE);
+
+    setfillstyle(SOLID_FILL, GREEN);
+    rectangle(550, 250, 590, 290);
+    floodfill(560, 270, WHITE);
+
+    setfillstyle(SOLID_FILL, BLUE);
+    rectangle(600, 250, 640, 290);
+    floodfill(620, 270, WHITE);
+
+    setfillstyle(SOLID_FILL, YELLOW);
+    rectangle(650, 250, 690, 290);
+    floodfill(660, 270, WHITE);
+
+    outtextxy(10, 350, "Select colour cicle");
+
+    setfillstyle(SOLID_FILL, MAGENTA);
+    rectangle(400, 350, 440, 390);
+    floodfill(420, 370, WHITE);
+
+    setfillstyle(SOLID_FILL, RED);
+    rectangle(450, 350, 490, 390);
+    floodfill(470, 370, WHITE);
+
+    setfillstyle(SOLID_FILL, CYAN);
+    rectangle(500, 350, 540, 390);
+    floodfill(520, 370, WHITE);
+
+    setfillstyle(SOLID_FILL, GREEN);
+    rectangle(550, 350, 590, 390);
+    floodfill(560, 370, WHITE);
+
+    setfillstyle(SOLID_FILL, BLUE);
+    rectangle(600, 350, 640, 390);
+    floodfill(620, 370, WHITE);
+
+    setfillstyle(SOLID_FILL, YELLOW);
+    rectangle(650, 350, 690, 390);
+    floodfill(660, 370, WHITE);
+
+    outtextxy(10, 450, "Press a or d to generate how many points");
+    rectangle(250, 550, 290, 590);
+    rectangle(350, 550, 390, 590);
+    rectangle(450, 550, 490, 590);
+    outtextxy(260, 555, "a");
+    outtextxy(460, 555, "d");
+    outtextxy(160, 650, "Press SPACE to continue");
+    bool spacePressed = false;
+    char selectKey;
+
+    while(1){
+
+        outtextxy(360, 555, index[puncteGenerate]);
+        selectKey = (char) getch();
+        selectKey = tolower(selectKey);
+
+        if (selectKey == 'a')
+            --puncteGenerate;
+
+        if (selectKey == 'd')
+            ++puncteGenerate;
+
+        if (GetAsyncKeyState(VK_SPACE)){
+            cleardevice();
+            break;
+        }
+    }
+
     srand(time(0));
 	GenerareRandom();
     line(0, 30, SIZE_WIDTH, 30);
@@ -377,15 +458,67 @@ void showControls(){
     outtextxy(controls_x, controls_y, "CONTROLS");
 }
 
+void ImagineMeniu()
+{
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL, BLUE);
+    circle(171, 722, 23);
+    floodfill(171, 722, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,RED);
+    circle(702, 256, 12);
+    floodfill(702, 256, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,BLACK);
+    circle(690, 206, 30);
+    floodfill(690, 206, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,RED);
+    circle(65, 303, 43);
+    floodfill(65, 303, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,CYAN);
+    circle(620, 465, 53);
+    floodfill(620, 465, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,RED);
+    circle(515, 387, 23);
+    floodfill(515, 387, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,MAGENTA);
+    circle(221, 629, 34);
+    floodfill(221, 629, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,RED);
+    circle(349, 378, 27);
+    floodfill(349, 378, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,WHITE);
+    circle(243, 282, 27);
+    floodfill(243, 282, WHITE);
+}
+
 int main()
 {
     int mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
 
+    ImagineMeniu();
     showTitle(); showPlay(); showRules(); showControls();
     circle_y = 320; circle_x = play_x - 100;
     circle(circle_x, circle_y, 10);
     setfillstyle(SOLID_FILL, WHITE);
     floodfill(circle_x, circle_y, WHITE);
+
+    setfillstyle(SOLID_FILL, LIGHTGRAY);
+    floodfill(0, 0, WHITE);
 
     int dx, dy;
     bool isClicked = true;
@@ -397,10 +530,15 @@ int main()
 
     while(gameRun){
 
+        setfillstyle(SOLID_FILL, DARKGRAY);
+        floodfill(0, 0, WHITE);
+
+        ImagineMeniu();
         keyPressed = (char) getch();
-        if (keyPressed == 'b' or keyPressed == 'B'){
+        if (keyPressed == 'b' or keyPressed == 'B' or GetAsyncKeyState(VK_HOME)){
             closegraph(CURRENT_WINDOW);
             mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
+            ImagineMeniu();
             showTitle(); showPlay(); showRules(); showControls();
             circle(circle_x, circle_y, 10);
             setfillstyle(SOLID_FILL, WHITE);
@@ -435,6 +573,7 @@ int main()
                     trageLinia(isClicked);
                     if (trageLinia(isClicked) == false){
                         keyPressed = 'b';
+                        cleardevice();
                         break;
                     }
                 }
