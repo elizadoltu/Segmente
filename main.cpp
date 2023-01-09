@@ -22,12 +22,6 @@ int controls_x, controls_y;
 int circle_x, circle_y;
 unsigned int puncteGenerate = 0;
 
-struct Player{
-
-    int winnerRounds;
-
-};
-
 struct coordonate{
 
 	int a, b, c, d;
@@ -68,14 +62,12 @@ bool comp(DrawPoint a, DrawPoint b)
 
 int CautareBin(int x, int y)
 {
-
-		int i;
+        int i;
 		for(i = 1; i <= cnt; i++)
 		{
 			if((point[i].xCoordonate >= x - 10 and point[i].xCoordonate <= x + 10) and (point[i].yCoordonate >= y - 10 and point[i].yCoordonate <= y + 10))return i;
 		}
 		return 0;
-
 
 }
 
@@ -86,6 +78,8 @@ int sarrus(int p1x, int p1y, int p2x, int p2y, int p3x, int p3y)
 
 int intersectie(int x, int y, int xs, int ys)
 {
+    //VERIFICAREA INTERSECTIEI
+    //DACA SEGMENTELE SE INTERSECTEAZA ACEASTA FUNCTIE RETURNEAZA 1, ALTFEL 0
 	for(int i = 1; i <= n; i++)
 	{
 		if(sarrus(segment[i].c, segment[i].d, segment[i].a, segment[i].b, x, y) * sarrus(segment[i].c, segment[i].d, segment[i].a, segment[i].b, xs, ys) <= 0 and sarrus(xs, ys, x, y, segment[i].a, segment[i].b) * sarrus(xs, ys, x, y, segment[i].c, segment[i].d) <= 0)return 1;
@@ -95,6 +89,7 @@ int intersectie(int x, int y, int xs, int ys)
 
 void Cercuri()
 {
+    //AFISAREA CERCURILOR SI NUMARUL LOR
     for(int i = 1; i <= cnt; i++)
     {
         setfillstyle(SOLID_FILL,RED);
@@ -108,6 +103,7 @@ void Cercuri()
 
 void GenerareRandom()
 {
+    //GENERAREA DE COORDONATE RANDOM 
 	while (cnt <= puncteGenerate)
     {
         while(1)
@@ -118,6 +114,7 @@ void GenerareRandom()
             int i = 1, ok = 1;
             for(i = 1; i < cnt; i++)
             {
+                //VERIFICAREA SUPLIMENTARA A COORDONATELOR PENTRU A NU SE GENERA UN PUNCT PREA APROAPE DE ALTUL
                 if((point[i].xCoordonate >= point[cnt].xCoordonate - 40 and point[i].xCoordonate <= point[cnt].xCoordonate + 40) and (point[i].yCoordonate >= point[cnt].yCoordonate - 40 and point[i].yCoordonate <= point[cnt].yCoordonate + 40))
                     ok = 0;
             }
@@ -130,7 +127,6 @@ void GenerareRandom()
 
 void Randare()
 {
-
     line(0, 30, SIZE_WIDTH, 30);
     line(SIZE_WIDTH - 30, 0, SIZE_WIDTH - 30, SIZE_WIDTH);
     for(int i = 1; i <= cnt; i++)
@@ -169,6 +165,7 @@ void Randare()
 void VerificareNodBlocat()
 {
 
+    //PARCURGEREA VECTORULUI CU NODURILE FOLOSITE PENTRU A VEDEA DACA MAI SUNT PUNCTE RAMASE LIBERE
 	for(int i = 1; i <= cnt; i++)
 	{
 		int p = 1;
@@ -185,17 +182,19 @@ void VerificareNodBlocat()
 
 int trageLinia(bool run)
 {
+    //FUNCTIA PENTRU A TRAGE O LINIE INTRE DOUA PUNCTE
     POINT cursorPos;
     int x1, x2, y1, y2, verif1, verif2, ok;
     int page = 0;
     while(run)
     {
          if (GetAsyncKeyState(VK_HOME)){
+            //SCOATE PLAYER-UL LA MENIUL PRINCIPAL
             cleardevice();
             run = false;
             return run;
          }
-
+        //VERIFICARE DACA UN PUNCT A FOST SELECTAT CU MOUSE UL
         if(ismouseclick(WM_LBUTTONDOWN))
         {
             getmouseclick(WM_LBUTTONDOWN, x1, y1);
@@ -230,6 +229,7 @@ int trageLinia(bool run)
                     	setcolor(WHITE);
                     	verif1 = 1;
 					}
+					//VERIFICARE DACA UN SEGMENT SE INTERSECTEAZA CU ALTUL SAU A FOST SELECTAT UN PUNCT DEJA FOLOSIT
                     else if(getpixel(cursorPos.x, cursorPos.y) == 4 and intersectie(point[c1].xCoordonate, point[c1].yCoordonate,cursorPos.x, cursorPos.y) == 1)
                     {
                         setcolor(RED);
@@ -266,10 +266,12 @@ int trageLinia(bool run)
                                 segment[n].b = point[c1].yCoordonate;
                                 segment[n].c = point[c2].xCoordonate;
                                 segment[n].d = point[c2].yCoordonate;
+                                //VERIFICARE DACA MAI SUNT PUNCTE LIBERE SAU SUNT TOATE BLOCATE
                                 VerificareNodBlocat();
                                 int p = 1;
                                 for(int i = 1; i <= cnt; i++)
                                  	p = p * viz[i];
+                                //STABILIREA PLAYER-ULUI CASTIGATOR
                                 if(p == 1 )
                                 {
                                 	if(n % 2 == 0)
@@ -300,6 +302,7 @@ int trageLinia(bool run)
                 verif1 = 0;
             }
         }
+        //UNDO
         if (GetAsyncKeyState(VK_DELETE))
             --n;
 
@@ -315,7 +318,8 @@ int trageLinia(bool run)
 void generarePuncte()
 {
     cleardevice();
-
+    
+    //AFISAREA OPTIUNILOR DE ALEGERE A CULORII LINIEI
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
     outtextxy(10, 250, "Select colour line");
     setfillstyle(SOLID_FILL, MAGENTA);
@@ -342,6 +346,7 @@ void generarePuncte()
     rectangle(650, 250, 690, 290);
     floodfill(660, 270, WHITE);
 
+    //AFISAREA OPTIUNILOR DE ALEGERE A CULORII CERCULUI
     outtextxy(10, 350, "Select colour cicle");
 
     setfillstyle(SOLID_FILL, MAGENTA);
@@ -368,6 +373,7 @@ void generarePuncte()
     rectangle(650, 350, 690, 390);
     floodfill(660, 370, WHITE);
 
+    //AFISAREA DE SELECTARE A PUNCTELOR GENERATE IN JOC
     outtextxy(10, 450, "Press a or d to generate how many points");
     rectangle(250, 550, 290, 590);
     rectangle(350, 550, 390, 590);
@@ -378,6 +384,7 @@ void generarePuncte()
     bool spacePressed = false;
     char selectKey;
 
+    //CONTROLUL DIN SAGETI SI SELECTAREA PUNCTELOR
     while(1){
 
         outtextxy(360, 555, index[puncteGenerate]);
@@ -396,6 +403,7 @@ void generarePuncte()
         }
     }
 
+    //AFISAREA TABLEI DE JOC
     srand(time(0));
 	GenerareRandom();
     line(0, 30, SIZE_WIDTH, 30);
@@ -404,7 +412,8 @@ void generarePuncte()
 }
 
 void showTitle(){
-
+    
+    //AFISAREA TITLULUI JOCULUI
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 6);
 
     int titleWidth = textwidth("SEGMENTE");
@@ -419,6 +428,7 @@ void showTitle(){
 
 void showPlay(){
 
+    //AFISAREA TEXTULUI PLAY
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
 
     int playWidth = textwidth("PLAY");
@@ -433,6 +443,7 @@ void showPlay(){
 
 void showRules(){
 
+    //AFISAREA TEXTULUI RULES
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
 
     int rulesWidth = textwidth("RULES");
@@ -447,6 +458,7 @@ void showRules(){
 
 void showControls(){
 
+    //AFISAREA TEXTULUI CONTROLS
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
 
     int controlsWidth = textwidth("CONTROLS");
@@ -460,6 +472,7 @@ void showControls(){
 
 void ImagineMeniu()
 {
+    //DESENARE CERCURI IN FEREASTRA MENIULUI PRINCIPAL
     setlinestyle(SOLID_LINE, 0, 1);
     setfillstyle(SOLID_FILL, BLUE);
     circle(171, 722, 23);
@@ -508,13 +521,14 @@ void ImagineMeniu()
 
 int main()
 {
+    //INITIALIZAREA MENIULUI
     int mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
 
     ImagineMeniu();
     showTitle(); showPlay(); showRules(); showControls();
-    circle_y = 320; circle_x = play_x - 100;
+    circle_y = 320; circle_x = play_x - 90;
     circle(circle_x, circle_y, 10);
-    setfillstyle(SOLID_FILL, WHITE);
+    setfillstyle(SOLID_FILL, BLACK);
     floodfill(circle_x, circle_y, WHITE);
 
     setfillstyle(SOLID_FILL, LIGHTGRAY);
@@ -523,48 +537,53 @@ int main()
     int dx, dy;
     bool isClicked = true;
     bool player1 = true, player2 = true;
-    int verificareCastigator;
 
     int rulesWindow, playWindow, controlsWindow;
     setcurrentwindow(mainWindow);
 
+    //WHILE-UL PRINCIPAL
     while(gameRun){
 
-        setfillstyle(SOLID_FILL, DARKGRAY);
+        setfillstyle(SOLID_FILL, BROWN);
         floodfill(0, 0, WHITE);
 
         ImagineMeniu();
         keyPressed = (char) getch();
+        //COMENZILE IN FUNCTIE DE INPUTUL UTILIZATORULUI
         if (keyPressed == 'b' or keyPressed == 'B' or GetAsyncKeyState(VK_HOME)){
+            //PENTRU A AJUNGE INAPOI LA MENIU
             closegraph(CURRENT_WINDOW);
             mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
             ImagineMeniu();
             showTitle(); showPlay(); showRules(); showControls();
             circle(circle_x, circle_y, 10);
             setfillstyle(SOLID_FILL, WHITE);
-            floodfill(circle_x, circle_y, WHITE);
+            floodfill(circle_x, circle_y, BLACK);
             setcurrentwindow(mainWindow);
         }
         if ((keyPressed == 'w' or keyPressed == 'W') and circle_y > 320){
+            //PUNCTUL DE MISCA MAI SUS
             cleardevice();
             showTitle(); showPlay(); showRules(); showControls();
             circle_y -= 160;
             circle(circle_x, circle_y, 10);
             setfillstyle(SOLID_FILL, WHITE);
-            floodfill(circle_x, circle_y, WHITE);
+            floodfill(circle_x, circle_y, BLACK);
         }
         if ((keyPressed == 's' or keyPressed == 'S') and circle_y < 640){
+            //PUNCTUL SE MISCA MAI JOS
             cleardevice();
             showTitle(); showPlay(); showRules(); showControls();
             circle_y += 160;
             circle(circle_x, circle_y, 10);
             setfillstyle(SOLID_FILL, WHITE);
-            floodfill(circle_x, circle_y, WHITE);
+            floodfill(circle_x, circle_y, BLACK);
         }
 
         if (GetAsyncKeyState(VK_SPACE)){
-
+            //VERIFICARE COORDONATE PUNCT
             if (circle_y == 320){
+                //MENIUL GAMEPLAY-ULUI
                 closegraph(CURRENT_WINDOW);
                 playWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "PLAY");
                 setcurrentwindow(playWindow);
@@ -579,6 +598,7 @@ int main()
                 }
             }
             if (circle_y == 480){
+                //MENIUL CU REGULILE JOCULUI
                 closegraph(CURRENT_WINDOW);
                 rulesWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "RULES");
                 setcurrentwindow(rulesWindow);
@@ -592,6 +612,7 @@ int main()
                 outtextxy(10, 180, "vor intretaia.");
             }
             if (circle_y == 640){
+                //MENIUL CU CONTROLUL DIN TASTATURA
                 closegraph(CURRENT_WINDOW);
                 controlsWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "CONTROLS");
                 setcurrentwindow(controlsWindow);
@@ -601,10 +622,12 @@ int main()
                 outtextxy(290, 340, "SPACE - select");
                 outtextxy(290, 420, "b, B - back");
                 outtextxy(290, 500, "ESCAPE - close the game");
+                outtextxy(290, 580, "HOME - to go back at the menu");
+                outtextxy(290, 660, "DELETE - undo");
             }
         }
-
         if (GetAsyncKeyState(VK_ESCAPE))
+            //PENTRU A IESI DIN JOC
             gameRun = false;
 
     }
