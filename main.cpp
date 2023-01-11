@@ -21,10 +21,16 @@ int play_x, play_y;
 int controls_x, controls_y;
 int circle_x, circle_y;
 unsigned int puncteGenerate = 0;
+int culoareCerc;
+int culoareLinie;
+int culoareLiniep1;
+int culoareLiniep2;
+
 
 struct coordonate{
 
 	int a, b, c, d;
+	int pct1, pct2;
 
 }segment[200];
 
@@ -92,7 +98,7 @@ void Cercuri()
     //AFISAREA CERCURILOR SI NUMARUL LOR
     for(int i = 1; i <= cnt; i++)
     {
-        setfillstyle(SOLID_FILL,RED);
+        setfillstyle(SOLID_FILL,culoareCerc);
         circle(point[i].xCoordonate, point[i].yCoordonate, 10);
         floodfill(point[i].xCoordonate, point[i].yCoordonate, WHITE);
         settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
@@ -103,7 +109,7 @@ void Cercuri()
 
 void GenerareRandom()
 {
-    //GENERAREA DE COORDONATE RANDOM 
+    //GENERAREA DE COORDONATE RANDOM
 	while (cnt <= puncteGenerate)
     {
         while(1)
@@ -133,31 +139,31 @@ void Randare()
     {
 
         setlinestyle(SOLID_LINE, 0, 1);
-        setfillstyle(SOLID_FILL,RED);
+        setfillstyle(SOLID_FILL,culoareCerc);
         circle(point[i].xCoordonate, point[i].yCoordonate, 10);
         floodfill(point[i].xCoordonate, point[i].yCoordonate, WHITE);
         settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
         outtextxy(point[i].xCoordonate - 6, point[i].yCoordonate - 30, index[i]);
-        setcolor(WHITE);
+
         if(viz[i] == 1)
         {
             setlinestyle(SOLID_LINE, 0, 1);
-            setcolor(RED);
+            setcolor(culoareCerc);
             circle(point[i].xCoordonate, point[i].yCoordonate, 10);
             setcolor(WHITE);
-            setfillstyle(SOLID_FILL,RED);
+            setfillstyle(SOLID_FILL,culoareCerc);
             circle(point[i].xCoordonate, point[i].yCoordonate, 15);
             floodfill(point[i].xCoordonate + 11, point[i].yCoordonate, WHITE);
             settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
             outtextxy(point[i].xCoordonate - 6, point[i].yCoordonate - 30, index[i]);
-            setcolor(WHITE);
         }
     }
 
     for(int i = 1; i <= n; i++)
     {
         setlinestyle(SOLID_LINE, 0, 3);
-        setcolor(GREEN);
+        if(i % 2 == 1)setcolor(culoareLiniep1);
+        else setcolor(culoareLiniep2);
         line(segment[i].a, segment[i].b, segment[i].c, segment[i].d);
     }
 }
@@ -180,20 +186,46 @@ void VerificareNodBlocat()
 
 }
 
+void reset()
+{
+	n = 0;
+	for(int  i = 1; i <= cnt; i++)
+		{
+			viz[i] = 0;
+
+		}
+	cnt = 0;
+}
+
+void generarePuncte();
+
 int trageLinia(bool run)
 {
     //FUNCTIA PENTRU A TRAGE O LINIE INTRE DOUA PUNCTE
     POINT cursorPos;
-    int x1, x2, y1, y2, verif1, verif2, ok;
+    int x1, x2, y1, y2, verif1, verif2, ok = 0;
     int page = 0;
+    int res = 0;
     while(run)
     {
-         if (GetAsyncKeyState(VK_HOME)){
+         if (GetAsyncKeyState(VK_HOME) and res == 0){
             //SCOATE PLAYER-UL LA MENIUL PRINCIPAL
             cleardevice();
             run = false;
+            res = 1;
+            reset();
             return run;
+
          }
+
+        if (GetAsyncKeyState(VK_F1)and res == 0){
+			cleardevice();
+            generarePuncte();
+            res = 1;
+            reset();
+            break;
+        }
+
         //VERIFICARE DACA UN PUNCT A FOST SELECTAT CU MOUSE UL
         if(ismouseclick(WM_LBUTTONDOWN))
         {
@@ -210,35 +242,36 @@ int trageLinia(bool run)
                     Randare();
                     GetCursorPos(&cursorPos);
                     ScreenToClient(GetForegroundWindow(), &cursorPos);
-                    if(ismouseclick(WM_RBUTTONDOWN))
+                    if(ismouseclick(WM_RBUTTONDOWN) and ok == 0)
                     {
+                        setlinestyle(SOLID_LINE, 0, 3);
                     	setcolor(BLACK);
                     	line(point[c1].xCoordonate, point[c1].yCoordonate,cursorPos.x, cursorPos.y);
                     	setlinestyle(SOLID_LINE, 0, 1);
-            			setcolor(RED);
             			circle(point[c1].xCoordonate, point[c1].yCoordonate, 10);
            				setcolor(WHITE);
-            			setfillstyle(SOLID_FILL,RED);
+            			setfillstyle(SOLID_FILL,culoareCerc);
             			circle(point[c1].xCoordonate, point[c1].yCoordonate, 15);
             			floodfill(point[c1].xCoordonate + 11, point[c1].yCoordonate, WHITE);
             			settextstyle(COMPLEX_FONT, HORIZ_DIR, 1);
            				outtextxy(point[c1].xCoordonate - 6, point[c1].yCoordonate - 30, index[c1]);
-            			setcolor(WHITE);
                     	viz[c1] = 0;
                     	clearmouseclick(WM_RBUTTONDOWN);
                     	setcolor(WHITE);
                     	verif1 = 1;
 					}
 					//VERIFICARE DACA UN SEGMENT SE INTERSECTEAZA CU ALTUL SAU A FOST SELECTAT UN PUNCT DEJA FOLOSIT
-                    else if(getpixel(cursorPos.x, cursorPos.y) == 4 and intersectie(point[c1].xCoordonate, point[c1].yCoordonate,cursorPos.x, cursorPos.y) == 1)
+                    if(intersectie(point[c1].xCoordonate, point[c1].yCoordonate,cursorPos.x, cursorPos.y) == 1)
                     {
                         setcolor(RED);
                         line(point[c1].xCoordonate, point[c1].yCoordonate, cursorPos.x, cursorPos.y);
                         setcolor(WHITE);
-                        clearmouseclick(WM_LBUTTONDBLCLK);
+                        ok = 1;
+                        delay(5);
                     }
                     else
                     {
+                    	ok = 0;
                         setcolor(WHITE);
                         line(point[c1].xCoordonate, point[c1].yCoordonate, cursorPos.x, cursorPos.y);
                         setcolor(WHITE);
@@ -251,14 +284,14 @@ int trageLinia(bool run)
                             if(c2 and viz[c2] == 0)
                             {
                                 setlinestyle(SOLID_LINE, 0, 1);
-                                setcolor(RED);
                                 circle(point[c2].xCoordonate, point[c2].yCoordonate, 10);
                                 setcolor(WHITE);
-                                setfillstyle(SOLID_FILL,RED);
+                                setfillstyle(SOLID_FILL,culoareCerc);
                                 circle(point[c2].xCoordonate, point[c2].yCoordonate, 15);
                                 floodfill(point[c2].xCoordonate + 11, point[c2].yCoordonate, WHITE);
                                 setlinestyle(SOLID_LINE, 0, 3);
-                                setcolor(GREEN);
+                                if(n % 2 == 0)setcolor(culoareLiniep1);
+                                else setcolor(culoareLiniep2);
                                 line(point[c1].xCoordonate, point[c1].yCoordonate, point[c2].xCoordonate, point[c2].yCoordonate);
                                 verif1 = 1;
                                 viz[c2] = 1;
@@ -266,6 +299,8 @@ int trageLinia(bool run)
                                 segment[n].b = point[c1].yCoordonate;
                                 segment[n].c = point[c2].xCoordonate;
                                 segment[n].d = point[c2].yCoordonate;
+                                segment[n].pct1 = c1;
+                                segment[n].pct2 = c2;
                                 //VERIFICARE DACA MAI SUNT PUNCTE LIBERE SAU SUNT TOATE BLOCATE
                                 VerificareNodBlocat();
                                 int p = 1;
@@ -276,21 +311,34 @@ int trageLinia(bool run)
                                 {
                                 	if(n % 2 == 0)
                                 	{
-                                		setcolor(YELLOW);
+                                		setcolor(WHITE);
+                                		setlinestyle(SOLID_LINE, 0, 6);
+                                		setfillstyle(SOLID_FILL,WHITE);
+                                		rectangle(SIZE_WIDTH/3, SIZE_WIDTH/3, SIZE_HEIGHT / 3 * 2, SIZE_HEIGHT / 2);
+                                		floodfill(SIZE_WIDTH/3 + 30, SIZE_WIDTH/3 + 30, WHITE);
+                                		setfillstyle(SOLID_FILL,WHITE);
+                                		rectangle(SIZE_WIDTH/3, SIZE_WIDTH/3, SIZE_HEIGHT / 3 * 2, SIZE_HEIGHT / 2);
+            							setcolor(YELLOW);
                                 		settextstyle(COMPLEX_FONT, HORIZ_DIR, 3);
-            							outtextxy(10, 20, "Player2 castiga!");
+            							outtextxy(SIZE_WIDTH/3 + 20, SIZE_WIDTH/3 + 50, "Player2 castiga!");
             							setcolor(WHITE);
 									}
                                 	else
                                 	{
-                                		setcolor(YELLOW);
+                                		setcolor(WHITE);
+                                		setlinestyle(SOLID_LINE, 0, 6);
+                                		setfillstyle(SOLID_FILL,WHITE);
+                                		rectangle(SIZE_WIDTH/3, SIZE_WIDTH/3, SIZE_HEIGHT / 3 * 2, SIZE_HEIGHT / 2);
+                                		floodfill(SIZE_WIDTH/3 + 30, SIZE_WIDTH/3 + 30, WHITE);
+                                		setfillstyle(SOLID_FILL,WHITE);
+                                		rectangle(SIZE_WIDTH/3, SIZE_WIDTH/3, SIZE_HEIGHT / 3 * 2, SIZE_HEIGHT / 2);
+            							setcolor(YELLOW);
                                 		settextstyle(COMPLEX_FONT, HORIZ_DIR, 3);
-            							outtextxy(10, 20, "Player1 castiga!");
+            							outtextxy(SIZE_WIDTH/3 + 20, SIZE_WIDTH/3 + 50, "Player1 castiga!");
             							setcolor(WHITE);
 									}
 
 								}
-
                             }
                         }
                     }
@@ -303,25 +351,53 @@ int trageLinia(bool run)
             }
         }
         //UNDO
-        if (GetAsyncKeyState(VK_DELETE))
-            --n;
-
-        delay(2);
-        if(n * 2 == cnt - 1)
+        if (ismouseclick(WM_MBUTTONDOWN) and n >= 0)
         {
-            cout << "END GAME";
-            return run;
-        }
+			viz[segment[n].pct1] = 0;
+            viz[segment[n].pct2] = 0;
+            --n;
+            clearmouseclick(WM_MBUTTONDOWN);
+		}
+        delay(2);
+
+
     }
 }
 
 void generarePuncte()
 {
     cleardevice();
-    
+
     //AFISAREA OPTIUNILOR DE ALEGERE A CULORII LINIEI
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 4);
-    outtextxy(10, 250, "Select colour line");
+    outtextxy(10, 150, "Select colour line 1");
+    setfillstyle(SOLID_FILL, MAGENTA);
+    rectangle(400, 150, 440, 190);
+    floodfill(420, 170, WHITE);
+
+    setfillstyle(SOLID_FILL, RED);
+    rectangle(450, 150, 490, 190);
+    floodfill(470, 170, WHITE);
+
+    setfillstyle(SOLID_FILL, CYAN);
+    rectangle(500, 150, 540, 190);
+    floodfill(520, 170, WHITE);
+
+    setfillstyle(SOLID_FILL, GREEN);
+    rectangle(550, 150, 590, 190);
+    floodfill(560, 170, WHITE);
+
+    setfillstyle(SOLID_FILL, BLUE);
+    rectangle(600, 150, 640, 190);
+    floodfill(620, 170, WHITE);
+
+    setfillstyle(SOLID_FILL, YELLOW);
+    rectangle(650, 150, 690, 190);
+    floodfill(660, 170, WHITE);
+
+    //AFISAREA OPTIUNILOR DE ALEGERE A CULORII CERCULUI
+    outtextxy(10, 250, "Select colour cicle");
+
     setfillstyle(SOLID_FILL, MAGENTA);
     rectangle(400, 250, 440, 290);
     floodfill(420, 270, WHITE);
@@ -346,8 +422,7 @@ void generarePuncte()
     rectangle(650, 250, 690, 290);
     floodfill(660, 270, WHITE);
 
-    //AFISAREA OPTIUNILOR DE ALEGERE A CULORII CERCULUI
-    outtextxy(10, 350, "Select colour cicle");
+     outtextxy(10, 350, "Select colour line 2");
 
     setfillstyle(SOLID_FILL, MAGENTA);
     rectangle(400, 350, 440, 390);
@@ -378,14 +453,167 @@ void generarePuncte()
     rectangle(250, 550, 290, 590);
     rectangle(350, 550, 390, 590);
     rectangle(450, 550, 490, 590);
-    outtextxy(260, 555, "a");
-    outtextxy(460, 555, "d");
+    outtextxy(260, 555, "-");
+    outtextxy(460, 555, "+");
     outtextxy(160, 650, "Press SPACE to continue");
     bool spacePressed = false;
     char selectKey;
 
     //CONTROLUL DIN SAGETI SI SELECTAREA PUNCTELOR
     while(1){
+
+        int x_click = 0, y_click = 0;
+        int x2_click = 0, y2_click = 0;
+        int x1save = 0, y1save = 0;
+        int x2save = 0, y2save = 0;
+        int choosedColourLine = 0;
+
+        if (ismouseclick(WM_LBUTTONDOWN)){
+        	setcolor(BLACK);
+        	circle(x1save, 230, 4);
+        	setcolor(WHITE);
+            getmouseclick(WM_LBUTTONDOWN, x_click, y_click);
+            choosedColourLine = getpixel(x_click, y_click);
+            if ((x_click >= 400 and x_click <= 440) and (y_click >= 150 and y_click <= 190))
+            {
+                culoareLiniep1 = 5;
+                setlinestyle(SOLID_LINE, 0, 6);
+            	circle(420, 170 - 40, 4);
+            	x1save = 420;
+            }
+            else if ((x_click >= 450 and x_click <= 490 and y_click >= 150 and y_click <= 190))
+            {
+				culoareLiniep1 = 4;
+				setlinestyle(SOLID_LINE, 0, 6);
+            	circle(470, 170 - 40, 4);
+            	x1save = 470;
+			}
+            else if ((x_click >= 500 and x_click <= 540 and y_click >= 150 and y_click <= 190))
+            {
+				culoareLiniep1 = 3;
+				setlinestyle(SOLID_LINE, 0, 6);
+            	circle(520, 170 - 40, 4);
+            	x1save = 520;
+            }
+            else if ((x_click >= 550 and x_click <= 590) and (y_click >= 150 and y_click <= 190))
+            {
+				culoareLiniep1 = 2;
+				setlinestyle(SOLID_LINE, 0, 6);
+            	circle(570, 170 - 40, 4);
+            	x1save = 570;
+            }
+            else if ((x_click >= 600 and x_click <= 640) and (y_click >= 150 and y_click <= 190))
+            {
+				culoareLiniep1 = 1;
+				setlinestyle(SOLID_LINE, 0, 6);
+            	circle(620, 170 - 40, 4);
+            	x1save = 620;
+			}
+            else if ((x_click >= 650 and x_click <= 690) and (y_click >= 150 and y_click <= 190))
+            {
+				culoareLiniep1 = 14;
+				setlinestyle(SOLID_LINE, 0, 6);
+            	circle(670, 170 - 40, 4);
+            	x1save = 670;
+			}
+
+			if ((x_click >= 400 and x_click <= 440) and (y_click >= 350 and y_click <= 390))
+                    {
+
+ 					culoareLiniep2 = 5;
+					setlinestyle(SOLID_LINE, 0, 6);
+            		circle(420, 370 - 40, 4);
+            		x1save = 620;
+					}
+                    if ((x_click >= 450 and x_click <= 490 and y_click >= 350 and y_click <= 390))
+                    {
+						culoareLiniep2 = 4;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(470, 370 - 40, 4);
+            			x1save = 470;
+            		}
+                    if ((x_click >= 500 and x_click <= 540 and y_click >= 350 and y_click <= 390))
+                    {
+						culoareLiniep2 = 3;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(520, 370 - 40, 4);
+            			x2save = 520;
+            		}
+                    if ((x_click >= 550 and x_click <= 590) and (y_click >= 350 and y_click <= 390))
+                    {
+                    	culoareLiniep2 = 2;
+                    	setlinestyle(SOLID_LINE, 0, 6);
+            			circle(570, 370 - 40, 4);
+            			x1save = 570;
+            		}
+                    if ((x_click >= 600 and x_click <= 640) and (y_click >= 350 and y_click <= 390))
+                    {
+						culoareLiniep2 = 1;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(620, 370 - 40, 4);
+            			x1save = 620;
+            		}
+                    if ((x_click >= 650 and x_click <= 690) and (y_click >= 350 and y_click <= 390))
+                    {
+						culoareLiniep2 = 14;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(670, 370 - 40, 4);
+            			x1save = 670;
+            		}
+
+
+        }
+
+    	int choosedColourCircle;
+        if (ismouseclick(WM_LBUTTONDBLCLK)){
+        	setcolor(BLACK);
+        	circle(x2save, 280 , 4);
+        	setcolor(WHITE);
+            getmouseclick(WM_LBUTTONDBLCLK, x2_click, y2_click);
+            choosedColourCircle = getpixel(x2_click, y2_click);
+                    if ((x2_click >= 400 and x2_click <= 440) and (y2_click >= 250 and y2_click <= 290))
+                    {
+						culoareCerc = 5;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(420, 270 - 40, 4);
+            			x2save = 420;
+					}
+                    if ((x2_click >= 450 and x2_click <= 490 and y2_click >= 250 and y2_click <= 290))
+                    {
+						culoareCerc = 4;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(470, 270 - 40, 4);
+            			x2save = 470;
+            		}
+                    if ((x2_click >= 500 and x2_click <= 540 and y2_click >= 250 and y2_click <= 290))
+                    {
+						culoareCerc = 3;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(520, 270 - 40, 4);
+            			x2save = 520;
+            		}
+                    if ((x2_click >= 550 and x2_click <= 590) and (y2_click >= 250 and y2_click <= 290))
+                    {
+                    	culoareCerc = 2;
+                    	setlinestyle(SOLID_LINE, 0, 6);
+            			circle(570, 270 - 40, 4);
+            			x2save = 570;
+            		}
+                    if ((x2_click >= 600 and x2_click <= 640) and (y2_click >= 250 and y2_click <= 290))
+                    {
+						culoareCerc = 1;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(620, 270 - 40, 4);
+            			x2save = 620;
+            		}
+                    if ((x2_click >= 650 and x2_click <= 690) and (y2_click >= 250 and y2_click <= 290))
+                    {
+						culoareCerc = 14;
+						setlinestyle(SOLID_LINE, 0, 6);
+            			circle(670, 270 - 40, 4);
+            			x2save = 670;
+            		}
+        }
 
         outtextxy(360, 555, index[puncteGenerate]);
         selectKey = (char) getch();
@@ -401,8 +629,9 @@ void generarePuncte()
             cleardevice();
             break;
         }
+        delay(2);
     }
-
+	setlinestyle(SOLID_LINE, 0, 1);
     //AFISAREA TABLEI DE JOC
     srand(time(0));
 	GenerareRandom();
@@ -412,7 +641,7 @@ void generarePuncte()
 }
 
 void showTitle(){
-    
+
     //AFISAREA TITLULUI JOCULUI
     settextstyle(EUROPEAN_FONT, HORIZ_DIR, 6);
 
@@ -517,13 +746,24 @@ void ImagineMeniu()
     setfillstyle(SOLID_FILL,WHITE);
     circle(243, 282, 27);
     floodfill(243, 282, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,WHITE);
+    circle(100, 50, 37);
+    floodfill(100, 50, WHITE);
+
+    setlinestyle(SOLID_LINE, 0, 1);
+    setfillstyle(SOLID_FILL,WHITE);
+    circle(743, 782, 27);
+    floodfill(743, 782, WHITE);
+
 }
 
 int main()
 {
     //INITIALIZAREA MENIULUI
     int mainWindow = initwindow(SIZE_WIDTH, SIZE_HEIGHT, "Segmente");
-
+    int page = 0;
     ImagineMeniu();
     showTitle(); showPlay(); showRules(); showControls();
     circle_y = 320; circle_x = play_x - 90;
@@ -531,7 +771,7 @@ int main()
     setfillstyle(SOLID_FILL, BLACK);
     floodfill(circle_x, circle_y, WHITE);
 
-    setfillstyle(SOLID_FILL, LIGHTGRAY);
+    setfillstyle(SOLID_FILL, BLACK);
     floodfill(0, 0, WHITE);
 
     int dx, dy;
@@ -544,10 +784,14 @@ int main()
     //WHILE-UL PRINCIPAL
     while(gameRun){
 
-        setfillstyle(SOLID_FILL, BROWN);
+
+        setactivepage(page);
+        cleardevice();
+        setfillstyle(SOLID_FILL, 0);
         floodfill(0, 0, WHITE);
 
         ImagineMeniu();
+        showTitle(); showPlay(); showRules(); showControls();
         keyPressed = (char) getch();
         //COMENZILE IN FUNCTIE DE INPUTUL UTILIZATORULUI
         if (keyPressed == 'b' or keyPressed == 'B' or GetAsyncKeyState(VK_HOME)){
@@ -562,8 +806,8 @@ int main()
             setcurrentwindow(mainWindow);
         }
         if ((keyPressed == 'w' or keyPressed == 'W') and circle_y > 320){
-            //PUNCTUL DE MISCA MAI SUS
-            cleardevice();
+            //PUNCTUL SE MISCA MAI SUS
+
             showTitle(); showPlay(); showRules(); showControls();
             circle_y -= 160;
             circle(circle_x, circle_y, 10);
@@ -572,7 +816,7 @@ int main()
         }
         if ((keyPressed == 's' or keyPressed == 'S') and circle_y < 640){
             //PUNCTUL SE MISCA MAI JOS
-            cleardevice();
+
             showTitle(); showPlay(); showRules(); showControls();
             circle_y += 160;
             circle(circle_x, circle_y, 10);
@@ -629,6 +873,9 @@ int main()
         if (GetAsyncKeyState(VK_ESCAPE))
             //PENTRU A IESI DIN JOC
             gameRun = false;
+            setvisualpage(page);
+                    page++;
+                    if(page % 2 == 0)page = 0;
 
     }
     closegraph();
