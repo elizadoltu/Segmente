@@ -6,4 +6,6 @@
 # English
 # On a sheet of paper, mark a few dozen points at random. Each of the two players has prepared a colored pencil, in this case, the points will appear on the screen. The points are joined, two by two, through right segments, regardless of the size and orientation of the segments. The same point cannot be the end of two or more segments, and the segments will not overlap.
 
-# https://youtu.be/Aj3KzG7khIY - prezentarea jocului
+# https://youtu.be/Aj3KzG7khIY - prezentarea jocului/presentation of the game
+
+# Game made by : Doltu Teodora - Eliza and Anea Andrei - Razvan
